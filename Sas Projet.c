@@ -1,8 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<time.h>
 
 int produitId = 1; // Initialisation de Id du produit pour Auto incrementations
+
 
 
 //Declaration de structure produit
@@ -13,6 +15,11 @@ typedef struct {
 	float prix;
 	
 }Produit;
+
+typedef struct {
+	float prix_tcc;
+	struct tm dateAchat;
+} Achat;
 
 //Ajouter un nouveau produit
 void ajouterProduit(Produit * prod, int size){
@@ -45,13 +52,12 @@ void listProduits(Produit *prod, int size){
 	printf("=================== Liste des produits (%d) ==================\n\n", size);
 	for(i =0; i < size; i++){
 		printf("              Produit %d\n",i+1);
-		printf("Id => %d\n", prod[i].id);
 		printf("Nom => %s\n", prod[i].nom);
-		printf("Quantite => %d\n", prod[i].qte);
-		printf("Prix => %f\n", prod[i].prix);
+		printf("Prix => %.2f DH\n", prod[i].prix);
+		printf("Prix TCC => %.2f DH\n", prod[i].prix + (prod[i].prix * 0.15));
 		printf("==============================\n");
 	}
-	getch();
+	
 }
 
 //Fonction pour ajouter plusieurs produits
@@ -114,6 +120,8 @@ void subMenuList (Produit * prod, int size){
 				
 			}
 			listProduits(prod,size);
+			break;
+			
 		case 2: 
 			for(i = 0; i < size; i++){
 				for(j = 0; j < size -1; j++){
@@ -126,31 +134,52 @@ void subMenuList (Produit * prod, int size){
 				
 			}
 			listProduits(prod,size);
-		
-		default : 
-			printf("Choix invalide ");
-			getch();
+			break;
 	}
+	getch();
+	
 	
 }
 
+//Fonction pour rechercher les produits par quantite
+void searchByQuantity(Produit * prod, int size){
+	int count = 0;
+	Produit * existedProducts = realloc(  existedProducts, count + 1 * sizeof(Produit));
+	int i,qte;
+	printf("Donner la quantite => ");
+	scanf("%d",&qte);
+	for(i = 0; i < size ; i++){
+		if(qte == prod[i].qte){
+			existedProducts[count] = prod[i];
+			count++;
+		}
+	}
+	if(count == 0){
+		printf("Aucun produit existe de cette quantite \n");
+		return;				
+	}
+	
+	listProduits(existedProducts, count);
+} 
+
+// 
 void searchById(Produit * prod,int size){
 	int id; 
 	printf("Donner l'Id du produit => ");
 	scanf("%d",&id);
 	int exists = findById(prod,size,id);
-	if(exists == 0){
+	if(exists == -1){
 		printf("Ce produit n'exist pas dans le stock: \n");
 	}else{
 		printf("Id => %d\n", prod[exists].id);
 		printf("Nom => %s\n", prod[exists].nom);
 		printf("Quantite => %d\n", prod[exists].qte);
-		printf("Prix => %f\n", prod[exists].prix);
+		printf("Prix => %2.f DH\n", prod[exists].prix);
 		printf("==============================\n");
 	}
 }
 
-// Fonction pour rechercher le produit par Id
+// Fonction pour Trouver le produit par Id
 int findById(Produit * prod, int size,int id  ){
 	int i = 0;
 	for(i = 0; i < size ; i++){
@@ -158,13 +187,70 @@ int findById(Produit * prod, int size,int id  ){
 			return i;
 	}
 	
-	return 0;
+	return -1;
 }
+
+//Sous-Menu pour rechercher le produit selon le choix d'utilisateur
+void subMenuSearch(Produit * prod, int size){
+	int choix;
+	do{
+		printf("Donner la maniere de recherche: \n");
+		printf("1- Par id: \t 2- Par prix: \n");
+		scanf("%d",&choix);
+		if(choix != 1 && choix != 2){
+			printf("Choix invalide \n");
+		}
+	}while(choix != 1 && choix != 2);
+	
+	switch(choix){
+		case 1 :
+			searchById(prod, size);
+			break;
+		case 2 : 
+			searchByQuantity(prod,size);
+			break;
+	}	
+	getch();
+	
+}
+
+
+void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
+	time_t today = time(NULL);
+	int id,quantity; 
+	printf("Donner l'Id du produit => ");
+	scanf("%d",&id);
+	int exists = findById(prod,size,id);
+	if(exists == -1){
+		printf("Ce produit n'exist pas dans le stock: \n");
+	}else{
+		printf("Nom => %s\n", prod[exists].nom);
+		printf("Quantite => %d\n", prod[exists].qte);
+		printf("Prix => %2.f DH\n", prod[exists].prix);
+		printf("Prix (TCC) => %2.f DH\n", prod[exists].prix + (prod[exists].prix * 0.15));
+		printf("==============================\n");
+		
+		printf("Donner la quanitite que vous voulez acheter ");
+		scanf("%d",&quantity);
+		if(quantity >= prod[exists].qte){
+			printf("Quantite insufisante !!!! \n");
+		}else{
+			
+			bonne[size2].prix_tcc = (prod[exists].prix + (prod[exists].prix * 0.15)) * quantity;
+			bonne[size2].dateAchat = *localtime(&today);
+			prod[exists].qte -= quantity;
+			printf("Vous avez acheter %d pieces du produit : %s %s \n", quantity, prod[exists].nom, prod[exists]);
+			printf("Prix TCC => %2.f \t Date d'achat %d-%02d-%02d %02d:%02d:%02d \n", bonne[size2].prix_tcc,bonne[size2].dateAchat.tm_year +1900, bonne[size2].dateAchat.tm_mon + 1, bonne[size2].dateAchat.tm_mday, bonne[size2].dateAchat.tm_hour, bonne[size2].dateAchat.tm_min, bonne[size2].dateAchat.tm_sec);
+		}
+	}
+}
+
+
 
 int main(){
 	
 	int nouveauTaille ;
-	int taille = 0;
+	int taille = 0,taille2 =0;
 	Produit * produits ;
 	while(1){
 		system("cls");
@@ -192,11 +278,14 @@ int main(){
 				break;
 			case 4:
 				printf("Acheter un produit: \n");
+				Achat * bonneAchat = realloc(bonneAchat , (taille + 1) * sizeof(Achat));
+				acheterProduit(produits, taille,bonneAchat, taille2);
+				taille2++;
 				getch();
 				break;
 			case 5: 
 				printf("Rechercher un produit: \n");
-				searchById(produits, taille);
+				subMenuSearch(produits, taille);
 				
 				
 				getch();
