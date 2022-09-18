@@ -245,7 +245,49 @@ void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
 	}
 }
 
+void etatDeStock(Produit * prod, int size){
+	int count = 0;
+	Produit * existedProducts = realloc( existedProducts, (count + 1) * sizeof(Produit));
+	int i,qte;
+	
+	for(i = 0; i < size ; i++){
+		if(prod[i].qte > 3){
+			existedProducts[count] = prod[i];
+			count++;
+		}
+	}
+	if(count == 0){
+		printf("Tous les produits ont la quantite superieur de 3\n");
+		return;				
+	}
+	printf("Les produits dont la quantite est inferieur de 3 \n");
+	listProduits(existedProducts, count);
+}
 
+void alimenterLeStock(Produit * prod, int size){
+time_t today = time(NULL);
+	int id,quantity; 
+	printf("Donner l'Id du produit => ");
+	scanf("%d",&id);
+	int exists = findById(prod,size,id);
+	if(exists == -1){
+		printf("Ce produit n'exist pas dans le stock: \n");
+	}else{
+		printf("Nom => %s\n", prod[exists].nom);
+		printf("Quantite => %d\n", prod[exists].qte);
+		printf("Prix => %2.f DH\n", prod[exists].prix);
+		printf("Prix (TCC) => %2.f DH\n", prod[exists].prix + (prod[exists].prix * 0.15));
+		printf("==============================\n");
+		
+		
+		
+		printf("Donner la quanitite que vous voulez acheter ");
+		scanf("%d",&quantity);
+		prod[exists].qte -= quantity;
+		printf("Vous avez ajouter %d pieces au produit : %s %s \n", quantity, prod[exists].nom, prod[exists]);
+		
+	}	
+}
 
 int main(){
 	
@@ -292,10 +334,12 @@ int main(){
 				break;
 			case 6:
 				printf("Etat de stock: \n");
+				etatDeStock(produits,taille);
 				getch();
 				break;
 			case 7:
 				printf("Alimenter le stock: \n");
+				alimenterLeStock(produits, taille);
 				getch();
 				break;
 			case 8:
