@@ -118,7 +118,6 @@ void subMenuList (Produit * prod, int size){
 						prod[j+1] = temp;
 					}
 				}
-				
 			}
 			listProduits(prod,size);
 			break;
@@ -137,7 +136,6 @@ void subMenuList (Produit * prod, int size){
 			listProduits(prod,size);
 			break;
 	}
-	getch();
 	
 	
 }
@@ -145,7 +143,7 @@ void subMenuList (Produit * prod, int size){
 //Fonction pour rechercher les produits par quantite
 void searchByQuantity(Produit * prod, int size){
 	int count = 0;
-	Produit * existedProducts = realloc(  existedProducts, count + 1 * sizeof(Produit));
+	Produit existedProducts[size];
 	int i,qte;
 	printf("Donner la quantite => ");
 	scanf("%d",&qte);
@@ -161,6 +159,7 @@ void searchByQuantity(Produit * prod, int size){
 	}
 	
 	listProduits(existedProducts, count);
+	getch();
 } 
 
 // La fonction pour rechercher un produit par son Id
@@ -247,8 +246,9 @@ void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
 }
 
 void etatDeStock(Produit * prod, int size){
+	printf("Debut\n");
 	int count = 0;
-	Produit * existedProducts = realloc( existedProducts, (count + 1) * sizeof(Produit));
+	Produit  existedProducts[size];
 	int i,qte;
 	
 	for(i = 0; i < size ; i++){
@@ -259,10 +259,14 @@ void etatDeStock(Produit * prod, int size){
 	}
 	if(count == 0){
 		printf("Tous les produits ont la quantite superieur de 3\n");
-		return;				
+					
+	}else{
+		printf("Les produits dont la quantite est inferieur de 3 \n");
+		listProduits(existedProducts, count);
 	}
-	printf("Les produits dont la quantite est inferieur de 3 \n");
-	listProduits(existedProducts, count);
+	getch();
+	
+
 }
 
 void alimenterLeStock(Produit * prod, int size){
@@ -312,6 +316,8 @@ void suprimerProduit(Produit * prod, int size){
 		for(i = exists; i < size; i++){
 			prod[i] = prod[i+1];
 		}
+		printf("done");
+		
 				
 		
 	}
@@ -408,6 +414,7 @@ int main(){
 				break;
 			case 3:
 				subMenuList(produits, taille);
+				getch();
 				break;
 			case 4:
 				printf("Acheter un produit: \n");
@@ -425,7 +432,6 @@ int main(){
 			case 6:
 				printf("Etat de stock: \n");
 				etatDeStock(produits,taille);
-				getch();
 				break;
 			case 7:
 				printf("Alimenter le stock: \n");
@@ -435,7 +441,7 @@ int main(){
 				printf("Suprimer un produit: \n");
 				suprimerProduit(produits, taille);
 				free(&produits[taille -1]);
-				taille --;
+				printf("Free done");
 				getch();
 				break;
 			case 9: 
