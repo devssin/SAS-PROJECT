@@ -3,7 +3,7 @@
 #include<string.h>
 #include<time.h>
 
-int produitId = 1; // Initialisation de Id du produit pour Auto incrementations
+int produitId = 1; // Initialisation de Id du produit pour Auto-incrementations
 
 //Declaration de structure produit
 typedef struct {
@@ -24,13 +24,8 @@ typedef struct {
 
 //Ajouter un nouveau produit
 void ajouterProduit(Produit * prod, int size){
-	
-	
-	
 	printf("=================== Ajouter un nouveau produit: ==================\n\n");
-
 	prod[size].id = produitId;
-	
 	prod[size].nom = malloc(40 * sizeof(char));
 	printf("Nom du produit => ");
 	scanf("%s",prod[size].nom);
@@ -38,21 +33,17 @@ void ajouterProduit(Produit * prod, int size){
 	scanf("%d",&prod[size].qte);
 	printf("Prix du produit => ");
 	scanf("%f",&prod[size].prix);
-	
 	produitId++;
 	printf("Ajout termine avec succee \n");
-	
-	
-
 	getch();
 }
 
-
+//Fonction pour lister les produits
 void listProduits(Produit *prod, int size){
 	int i;
 	printf("=================== Liste des produits (%d) ==================\n\n", size);
 	for(i =0; i < size; i++){
-		printf("              Produit %d\n",i+1);
+		printf("              Produit %d id(%d)\n ",i+1 , prod[i].id);
 		printf("Nom => %s\n", prod[i].nom);
 		printf("Prix => %.2f DH\n", prod[i].prix);
 		printf("Prix TCC => %.2f DH\n", prod[i].prix + (prod[i].prix * 0.15));
@@ -76,7 +67,8 @@ void ajouterPlusieurProduits(Produit * prod,int size,int newSize){
 		produitId++;
 		printf("=================================================\n\n");
 	}
-	
+	printf("%d Produits sont ajoute dans le stock \n");
+	getch();
 	
 }
 //Fonction pour afficher le menu principal
@@ -94,7 +86,7 @@ int menu(){
 	return op; 
 }
 
-/*Fonction pour Afficher le sous-menu pour afficher la liste des produits 
+/*Fonction sous-menu pour afficher la liste des produits 
 	selon l'ordre choisi par l'utilisateur */
 void subMenuList (Produit * prod, int size){
 	
@@ -110,6 +102,7 @@ void subMenuList (Produit * prod, int size){
 	}while(choix != 1 && choix != 2);
 	switch(choix){
 		case 1: 
+			//Trier les produit selon l'ordre alphabitique
 			for(i = 0; i < size; i++){
 				for(j = 0; j < size -1; j++){
 					if(strcmp(prod[j].nom, prod[j+1].nom) == 1){
@@ -123,6 +116,7 @@ void subMenuList (Produit * prod, int size){
 			break;
 			
 		case 2: 
+			//Trier le programe selon le prix 
 			for(i = 0; i < size; i++){
 				for(j = 0; j < size -1; j++){
 					if(prod[j].prix < prod[j + 1].prix){
@@ -186,7 +180,6 @@ int findById(Produit * prod, int size,int id  ){
 		if(prod[i].id == id)
 			return i;
 	}
-	
 	return -1;
 }
 
@@ -195,7 +188,7 @@ void subMenuSearch(Produit * prod, int size){
 	int choix;
 	do{
 		printf("Donner la maniere de recherche: \n");
-		printf("1- Par id: \t 2- Par prix: \n");
+		printf("1- Par id: \t 2- Par quantite: \n");
 		scanf("%d",&choix);
 		if(choix != 1 && choix != 2){
 			printf("Choix invalide \n");
@@ -205,17 +198,27 @@ void subMenuSearch(Produit * prod, int size){
 	switch(choix){
 		case 1 :
 			searchById(prod, size);
+			getch();
 			break;
 		case 2 : 
 			searchByQuantity(prod,size);
+			getch();
 			break;
 	}	
 	
 }
 
-
+//Fonction pour Acheter un produit par Id
 void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
-	printf("Inside function\n");
+	if(size == 0){
+		printf("Le stock est vide , Ajouter des produit \n");
+		getch();
+		return;
+	}
+	
+	/*
+		L'appel à time(NULL) renvoie le temps calendaire actuel (secondes depuis le 1er janvier 1970).	
+	*/
 	time_t today = time(NULL);
 	int id,quantity; 
 	printf("Donner l'Id du produit => ");
@@ -229,12 +232,12 @@ void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
 		printf("Prix => %.2f DH\n", prod[exists].prix);
 		printf("Prix (TCC) => %.2f DH\n", prod[exists].prix + (prod[exists].prix * 0.15));
 		printf("==============================\n");
-		
 		printf("Donner la quanitite que vous voulez acheter ");
 		scanf("%d",&quantity);
 		if(quantity >= prod[exists].qte){
 			printf("Quantite insufisante !!!! \n");
 		}else{
+			printf("Debut d'achat\n");
 			strcpy(bonne[size2].nom,prod[exists].nom);
 			bonne[size2].prix_tcc = (prod[exists].prix + (prod[exists].prix * 0.15)) * quantity;
 			bonne[size2].dateAchat = *localtime(&today);
@@ -245,12 +248,17 @@ void acheterProduit(Produit * prod, int size,Achat * bonne, int size2){
 	}
 }
 
+
+//Fonction Pour Afficher l'etat de stock
 void etatDeStock(Produit * prod, int size){
-	printf("Debut\n");
 	int count = 0;
 	Produit  existedProducts[size];
+	if(size == 0){
+		printf("Le stock est vide , Ajouter des produit \n");
+		getch();
+		return;
+	}
 	int i,qte;
-	
 	for(i = 0; i < size ; i++){
 		if(prod[i].qte < 3){
 			existedProducts[count] = prod[i];
@@ -265,12 +273,16 @@ void etatDeStock(Produit * prod, int size){
 		listProduits(existedProducts, count);
 	}
 	getch();
-	
-
 }
 
+
+//Fonction Pour Alimenter le stock
 void alimenterLeStock(Produit * prod, int size){
-time_t today = time(NULL);
+	if(size == 0){
+		printf("Le stock est vide , Ajouter des produit \n");
+		getch();
+		return;
+	}
 	int id,quantity; 
 	printf("Donner l'Id du produit => ");
 	scanf("%d",&id);
@@ -283,19 +295,22 @@ time_t today = time(NULL);
 		printf("Prix => %.2f DH\n", prod[exists].prix);
 		printf("Prix (TCC) => %.2f DH\n", prod[exists].prix + (prod[exists].prix * 0.15));
 		printf("==============================\n");
-		
-		
-		
 		printf("Donner la quanitite que vous voulez ajouter ");
 		scanf("%d",&quantity);
 		prod[exists].qte += quantity;
 		printf("Vous avez ajouter %d pieces au produit : %s %s \n", quantity, prod[exists].nom, prod[exists]);
+		
 		
 	}	
 }
 
 //Fonction pour suprimer un produit par Id
 void suprimerProduit(Produit * prod, int size){
+	if(size == 0){
+		printf("Le stock est vide , Ajouter des produit \n");
+		getch();
+		return;
+	}
 	int id,i,confirmer; 
 	printf("Donner l'Id du produit => ");
 	scanf("%d",&id);
@@ -307,22 +322,19 @@ void suprimerProduit(Produit * prod, int size){
 		printf("Quantite => %d\n", prod[exists].qte);
 		printf("Prix => %.2f DH\n", prod[exists].prix);
 		printf("==============================\n");
-		
 		do{
 			printf("Appuillez sur 1 pour confirmer la supression : \n");
-			scanf("%d",&confirmer);
-			
+			scanf("%d",&confirmer);	
 		}while(confirmer != 1);
 		for(i = exists; i < size; i++){
 			prod[i] = prod[i+1];
 		}
-		printf("done");
-		
-				
-		
+		printf("Supression Termine\n");
 	}
 }
 
+
+//Fonction Pour Calculer Le total des prix 
 float totalPrix(Achat *bonne, int size){
 	int i;
 	float  somme = 0;
@@ -331,9 +343,13 @@ float totalPrix(Achat *bonne, int size){
 	}
 	return somme;
 }
+
+//Fonction Pour Calculer la moyenne des prix 
 float moyennePrix(Achat *bonne, int size){
 	return totalPrix(bonne, size) / size;
 }
+
+//Fonction Pour Afficher Le minimum des prix vendus dans la journee courante
 void minPrix(Achat * bonne, int size){
 	int i;
 	Achat min = bonne[0];
@@ -347,6 +363,8 @@ void minPrix(Achat * bonne, int size){
 	
 }
 
+
+//Fonction Pour Afficher le maximum des prix vendus dans la journee courante
 void maxPrix(Achat * bonne, int size){
 	int i;
 	Achat max = bonne[0];
@@ -360,18 +378,23 @@ void maxPrix(Achat * bonne, int size){
 	
 }
 
+
+//Fonction Pour Afficher les stqtistiques de vente dans la journee courante
 void staticDeVente(Achat *bonne, int size){
+	if(size == 0){
+		printf("Le stock est vide , Ajouter des produit \n");
+		getch();
+		return;
+	}
 	int op;
 	printf("1- Afficher le total des prix des produits vendus en journee courante \n");
 	printf("2- Afficher la moyenne des prix des produits vendus en journée courante\n");
 	printf("3- Afficher le Max des prix des produits vendus en journée courante\n");
 	printf("4- Afficher le Min des prix des produits vendus en journée courante\n");
 	scanf("%d",&op);
-	
-	
 	switch(op){
 		case 1: 
-			printf("Total => %.2f DH TTC",totalPrix(bonne, size));
+			printf("Total => %.2f DH TTC", totalPrix(bonne, size));
 			break;
 		case 2:
 			printf("Moyenne => %.2f DH TTC",moyennePrix(bonne, size));
@@ -385,8 +408,9 @@ void staticDeVente(Achat *bonne, int size){
 	}
 }
 
+
+
 int main(){
-	
 	int nouveauTaille ;
 	int taille = 0,taille2 =0;
 	Produit * produits ;
@@ -397,7 +421,6 @@ int main(){
 		int close = 0;
 		system("cls");
 		switch(operation){
-			
 			case 1:
 				produits = realloc(produits , (taille + 1) * sizeof(Produit) );
 				ajouterProduit(produits,taille);
@@ -426,8 +449,6 @@ int main(){
 			case 5: 
 				printf("Rechercher un produit: \n");
 				subMenuSearch(produits, taille);
-				
-				
 				break;
 			case 6:
 				printf("Etat de stock: \n");
@@ -436,13 +457,18 @@ int main(){
 			case 7:
 				printf("Alimenter le stock: \n");
 				alimenterLeStock(produits, taille);
+				getch();
 				break;
 			case 8:
 				printf("Suprimer un produit: \n");
-				suprimerProduit(produits, taille);
-				free(&produits[taille -1]);
-				printf("Free done");
-				getch();
+				if(taille == 0){
+					printf("Le stock est vide , Ajouter des produit \n");
+					getch();
+				}else{
+					suprimerProduit(produits, taille);
+					taille--;
+					getch();
+				}
 				break;
 			case 9: 
 				printf("Statistic de vente: \n");
@@ -457,7 +483,6 @@ int main(){
 				getch();
 				break;
 		}	
-		
 		if(close == 1){
 			printf("\nAu revoir:");
 			break;
