@@ -24,11 +24,15 @@ typedef struct {
 
 //Ajouter un nouveau produit
 void ajouterProduit(Produit * prod, int size){
+	char nom1[50], nom2[50];
 	printf("=================== Ajouter un nouveau produit: ==================\n\n");
 	prod[size].id = produitId;
-	prod[size].nom = malloc(40 * sizeof(char));
+	prod[size].nom = malloc(100 * sizeof(char));
 	printf("Nom du produit => ");
-	scanf("%s",prod[size].nom);
+	scanf("%s %s", nom1,nom2);
+	strcat(nom1, " ");
+	strcat(nom1,nom2);
+	strcpy(prod[size].nom,nom1);
 	printf("Quanite du produit => ");
 	scanf("%d",&prod[size].qte);
 	printf("Prix du produit => ");
@@ -55,11 +59,16 @@ void listProduits(Produit *prod, int size){
 //Fonction pour ajouter plusieurs produits
 void ajouterPlusieurProduits(Produit * prod,int size,int newSize){
 	int i;
+	char nom1[50], nom2[50];
+
 	for(i= size; i < newSize + size ; i++){
 		prod[i].id = produitId;
-		prod[i].nom = malloc(40 * sizeof(char));
+		prod[i].nom = malloc(100 * sizeof(char));
 		printf("Nom du produit => ");
-		scanf("%s",prod[i].nom);
+		scanf("%s %s", nom1,nom2);
+		strcat(nom1, " ");
+		strcat(nom1,nom2);
+		strcat(prod[i].nom, nom1);
 		printf("Quanite du produit => ");
 		scanf("%d",&prod[i].qte);
 		printf("Prix du produit => ");
