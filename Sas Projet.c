@@ -24,15 +24,12 @@ typedef struct {
 
 //Ajouter un nouveau produit
 void ajouterProduit(Produit * prod, int size){
-	char nom1[50], nom2[50];
 	printf("=================== Ajouter un nouveau produit: ==================\n\n");
 	prod[size].id = produitId;
 	prod[size].nom = malloc(100 * sizeof(char));
 	printf("Nom du produit => ");
-	scanf("%s %s", nom1,nom2);
-	strcat(nom1, " ");
-	strcat(nom1,nom2);
-	strcpy(prod[size].nom,nom1);
+	scanf("%s",prod[size].nom);
+	
 	printf("Quanite du produit => ");
 	scanf("%d",&prod[size].qte);
 	printf("Prix du produit => ");
@@ -60,15 +57,11 @@ void listProduits(Produit *prod, int size){
 void ajouterPlusieurProduits(Produit * prod,int size,int newSize){
 	int i;
 	char nom1[50], nom2[50];
-
 	for(i= size; i < newSize + size ; i++){
 		prod[i].id = produitId;
 		prod[i].nom = malloc(100 * sizeof(char));
 		printf("Nom du produit => ");
-		scanf("%s %s", nom1,nom2);
-		strcat(nom1, " ");
-		strcat(nom1,nom2);
-		strcat(prod[i].nom, nom1);
+		scanf("%s", prod[i].nom);
 		printf("Quanite du produit => ");
 		scanf("%d",&prod[i].qte);
 		printf("Prix du produit => ");
@@ -83,13 +76,13 @@ void ajouterPlusieurProduits(Produit * prod,int size,int newSize){
 //Fonction pour afficher le menu principal
 int menu(){
 	int op;
-	printf("==================== Gestion de Pharmacie ========================\n");
-	printf("1- Ajouter un nouveau prodouit: \t 2- Ajouter plusieur produits:\n");
-	printf("3- Consulter la liste des produit: \t 4-:Acheter un produit: \n");
-	printf("5- Rechercher un produit: \t\t 6- Etat de stock:\n");
-	printf("7- Alimenter le stock: \t\t\t 8- Suprimer un produit: \n");
-	printf("9- Static de vente: \t\t\t 10- Quitter le programme: \n");
-	printf("======================================================================\n");
+	printf("==================== Gestion de Pharmacie ==============================\n");
+	printf("1- Ajouter un nouveau prodouit: \t 2- Ajouter plusieur produits: =\n");
+	printf("3- Consulter la liste des produit: \t 4-:Acheter un produit:        =\n");
+	printf("5- Rechercher un produit: \t\t 6- Etat de stock:             =\n");
+	printf("7- Alimenter le stock: \t\t\t 8- Suprimer un produit:       =\n");
+	printf("9- Static de vente: \t\t\t 10- Quitter le programme:     =\n");
+	printf("========================================================================\n");
 	printf("\nVeuillez Choisir un operation: => ");
 	scanf("%d", &op);
 	return op; 
@@ -139,8 +132,6 @@ void subMenuList (Produit * prod, int size){
 			listProduits(prod,size);
 			break;
 	}
-	
-	
 }
 
 //Fonction pour rechercher les produits par quantite
@@ -307,9 +298,7 @@ void alimenterLeStock(Produit * prod, int size){
 		printf("Donner la quanitite que vous voulez ajouter ");
 		scanf("%d",&quantity);
 		prod[exists].qte += quantity;
-		printf("Vous avez ajouter %d pieces au produit : %s %s \n", quantity, prod[exists].nom, prod[exists]);
-		
-		
+		printf("Vous avez ajouter %d pieces au produit : %s %s \n", quantity, prod[exists].nom, prod[exists]);	
 	}	
 }
 
@@ -380,11 +369,9 @@ void maxPrix(Achat * bonne, int size){
 	for(i = 0; i <size; i++){
 		if(bonne[i].prix_tcc > max.prix_tcc )
 			max = bonne[i];
-	}
-	
+	}	
 	printf("le max des prix des produits vendus en  %02d-%02d-%d: \n",max.dateAchat.tm_mday, max.dateAchat.tm_mon + 1, max.dateAchat.tm_year +1900);
 	printf("%s => %.2f",max.nom,max.prix_tcc );
-	
 }
 
 
